@@ -83,4 +83,4 @@ async def start(ctx, *players:discord.Member):
 
 
 # run the bot
-client.run('ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.NqGncRGlxlVIE71EZjOalkLiowM')
+client.run('')
