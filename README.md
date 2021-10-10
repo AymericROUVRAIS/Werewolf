@@ -19,7 +19,6 @@ To do :
 
 
 
-
 Rules :
 - Nombre de joueurs : 8 à 18
 |num|lg|soso|villageois|
