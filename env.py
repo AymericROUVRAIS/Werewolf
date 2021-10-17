@@ -7,7 +7,7 @@ from discord_components import DiscordComponents, Button, ButtonStyle, component
 
 
 # variables :
-TOKEN = 'ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.rV8xEjQIBFsf1bGJ0lAKEn2-7Pk'
+TOKEN = ''
 guild = '840268645996429343'
 roles = [
     ('werewolves', 1),
