@@ -1,9 +1,7 @@
-import random
-import discord, asyncio
-from discord.ext import commands
+from env import *
 
 client = commands.Bot(command_prefix = '/')
-
+ddb = DiscordComponents(client)
 
 
 
@@ -29,10 +27,8 @@ def count_num(players):
 def members_tuple(players):
     a = ()
     for player in players:
-        a.append([player.name, players])
+        a += (player.name, players)
     return tuple(a)
-
-
 
 
 
@@ -49,7 +45,7 @@ async def start(ctx, *players:discord.Member):
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
 
-    num_player = count_num(players)    
+    num_player = count_num(players)
 
     try:
         reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
@@ -60,10 +56,13 @@ async def start(ctx, *players:discord.Member):
             await ctx.channel.purge(limit=1)
             await ctx.send('The game has been cancelled')
 
-        elif num_player < 8 or num_player > 18:
-            await ctx.purge(limit=1)
-            await ctx.send('Too many players, there must be 8 to 18 players')
-            await ctx.send('The game can\'t start')
+        # elif num_player < 8 or num_player > 18:
+        #     await ctx.channel.purge(limit=1)
+        #     if num_player < 8:
+        #         await ctx.send('Not enough players, there must be at least 8 players')
+        #     if num_player > 18 :
+        #         await ctx.send('Too many players, there must be less than 18 players')
+        #     await ctx.send('The game can\'t start')
 
 
 
@@ -76,11 +75,25 @@ async def start(ctx, *players:discord.Member):
                 channel = await player.create_dm()
                 await channel.send('You have been added to a werewolf game!')
 
-            
+
+            for i in range (num_player):
+                if roles[1][1] == 0:
+                    msg = await ctx.send(f'Do you want a {roles[i][0]}')
+                    await msg.add_reaction('✅')
+                    await msg.add_reaction('❌')
+                else:
+                    pass
 
 
+
+  
+
+
+@client.command()
+async def make_channel(ctx):
+    channel = await guild.create_text_channel('cool-channel')
 
 
 
 # run the bot
-client.run('')
+client.run(TOKEN)
