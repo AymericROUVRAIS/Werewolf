@@ -2,15 +2,16 @@
 from discord.ext import commands
 import discord, asyncio, random
 from discord.utils import get
-from discord_components import DiscordComponents, Button, ButtonStyle, component
 
 
 
 # variables :
-TOKEN = ''
+TOKEN = 'ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.WiJB1FKMab61Vvlig5fMVurPkiM'
 guild = '840268645996429343'
+num_role = 0
+num_total_roles = 4
 roles = [
-    ('werewolves', 1),
+    ('werewolve', 1),
     ('witch', 0),
     ('seer', 0),
     ('cupid', 0),
