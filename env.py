@@ -6,7 +6,7 @@ from discord.utils import get
 
 
 # variables :
-TOKEN = 'ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.WiJB1FKMab61Vvlig5fMVurPkiM'
+TOKEN = ''
 guild = '840268645996429343'
 num_role = 0
 num_total_roles = 4
