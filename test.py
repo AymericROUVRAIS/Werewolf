@@ -26,6 +26,12 @@ def members_tuple(players):
         a += (player)
     return tuple(a)
 
+def members_list(players):
+    a = []
+    for player in players:
+        a.append((player.name, player),)
+    return list(a)
+
 num_role = 0
 class Python_con:
     def __init__(self):
@@ -42,7 +48,7 @@ async def start(ctx, *players):
     def check_msg(message):
         return message.author == ctx.message.author and ctx.message.channel == message.channel
 
-    discord_members = members_tuple(players)
+    discord_members = members_list(players)
 
     num_player = count_num(players)
     num_role = Python_con
@@ -59,11 +65,17 @@ async def start(ctx, *players):
                 if int(num_role.content) >= num_player:
                     await ctx.send('Too many players, please retype an input')
 
-    await ctx.send(discord_members)
 
+    for player in players: # give each player a number
+        pass
+    
+    for role in roles: # give each role a number
+        pass
 
-
-
+    for player in players:
+        for role in roles:
+            if player == role : # if num ==, give role to player
+                pass
 
 # run the bot
 client.run(TOKEN)

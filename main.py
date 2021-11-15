@@ -23,11 +23,11 @@ def count_num(players):
         i+=1
     return i
 
-def members_tuple(players):
-    a = ()
+def members_list(players):
+    a = []
     for player in players:
-        a += (player.name, player)
-    return tuple(a)
+        a.append((player.name, player),)
+    return list(a)
 
 class NumRole:
     def __init__(self):
@@ -78,7 +78,7 @@ async def start(ctx, *players:discord.Member):
 
         # Main loop for the game
         else:
-            discord_members = members_tuple(players)
+            discord_members = members_list(players)
             await ctx.send(discord_members)
 
             for player in players:
@@ -88,7 +88,7 @@ async def start(ctx, *players:discord.Member):
             
             for i in range(num_total_roles): # define number of each role
                 if roles[i][1] == 0:
-                    msg = await ctx.send(f'Do you want a {roles[i][0]}')
+                    msg = await ctx.send(f'Do you want a {roles[i][0]}?')
                     await msg.add_reaction('✅')
                     await msg.add_reaction('❌')
                     if reaction.emoji == '✅':
@@ -102,7 +102,7 @@ async def start(ctx, *players:discord.Member):
                     
             # affect roles to players
 
-  
+
 
 
 @client.command()
