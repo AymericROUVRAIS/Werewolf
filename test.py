@@ -12,92 +12,57 @@ async def on_ready():
 
 
 
-# Functions
-def count_num(players):
-    i = 0
-    for player in players:
-        i+=1
-    return i
-
-def members_tuple(players):
-    a = ()
-    for player in players:
-        tuple(player)
-        a += (player)
-    return tuple(a)
-
-def members_list(players):
-    a = []
-    for player in players:
-        a.append((player.name, player),)
-    return list(a)
-
-def give_num(_list, max_num):
-    done = []
-    a = 0
-    for i in range(max_num):
-        a = randint(0, max_num)
-        while a in done:
-            a = randint(0, max_num)
-            print(a)
-        _list.append((_list[i][0], done[i]))
-    return _list
-
-num_role = 0
-class Python_con:
-    def __init__(self):
-        self.num = num_role
-    def content(self):
-        return int(self.num)
-
-
 
 
 # Start command :
 @client.command()
-async def start(ctx, *players):
+async def start(ctx, *players:discord.Member):
+    # Define different checks
+    def check(reaction, user):
+        return user == ctx.message.author and msg.id == reaction.message.id and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
     def check_msg(message):
         return message.author == ctx.message.author and ctx.message.channel == message.channel
 
-    # discord_members = members_list(players)
-    # players_num = members_list(players)
-    # roles_num = []
-    # for i in range(roles):
-    #     roles_num.append((roles[i][0], 0))
+    discord_members = members_list(players)
 
     num_player = count_num(players)
-    num_role = Python_con
+    num_role = NumRole
     num_role.content = num_player+1
     for i in range(4):
         if roles[i][1] == 0:
             msg = await ctx.send(f'Do you want a {roles[i][0]}?')
             await msg.add_reaction('✅')
             await msg.add_reaction('❌')
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.send('Timeout, command no longer valid')  
+            if reaction.emoji == '❌':
+                pass
+
         else:
-            while int(num_role.content) >= num_player:
+            while int(num_role.content) > num_player:
                 await ctx.send(f'How many {roles[i][0]} do you want? (0 - {num_player})')
                 num_role = await client.wait_for('message', check=check_msg)
                 if int(num_role.content) >= num_player:
                     await ctx.send('Too many players, please retype an input')
 
 
+    players_role_list = []
+    for i in range(num_player):
+        players_role_list.append(discord_members[i][0])
 
-    players_num_for_role = give_num(list(players), num_player)
-    role_num = give_num(list(roles), 4)
+
+    players_num_for_role = give_num(players_role_list, num_player)
+    role_num = give_num(roles_list, 4)
 
     await ctx.send(players_num_for_role)
     await ctx.send(role_num)
 
-    # for i in range(num_player): # give each role a number
-    #    roles[i][1] = randint(0, num_player)
-
-    # for i in range(num_player): # give each player a number
-    #     players_num[i][1] = randint(0, num_player)
-
-    # for i in range(num_player):
-    #     for x in range(num_player):
-    #         if i == x : # if num ==, give role to player
-    #             pass
+    for i in range(num_player):
+        for x in range(num_player):
+            if i == x : # if num ==, give role to player
+                pass
 
 
 

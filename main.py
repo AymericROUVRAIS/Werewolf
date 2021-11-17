@@ -12,28 +12,9 @@ async def on_ready():
 
 
 
-
-# Different functions for game :
+# WHY ARE THEY HERE???? 
 NAME = 0
 MEMBER = 1
-
-def count_num(players):
-    i = 0
-    for player in players:
-        i+=1
-    return i
-
-def members_list(players):
-    a = []
-    for player in players:
-        a.append((player.name, player),)
-    return list(a)
-
-class NumRole:
-    def __init__(self):
-        self.num = num_role
-    def content(self):
-        return int(self.num)
 
 
 
@@ -65,13 +46,13 @@ async def start(ctx, *players:discord.Member):
             await ctx.channel.purge(limit=1)
             await ctx.send('The game has been cancelled')
 
-        # elif num_player < 8 or num_player > 18:
-        #     await ctx.channel.purge(limit=1)
-        #     if num_player < 8:
-        #         await ctx.send('Not enough players, there must be at least 8 players')
-        #     if num_player > 18 :
-        #         await ctx.send('Too many players, there must be less than 18 players')
-        #     await ctx.send('The game can\'t start')
+        elif num_player < 8 or num_player > 18:
+            await ctx.channel.purge(limit=1)
+            if num_player < 8:
+                await ctx.send('Not enough players, there must be at least 8 players')
+            if num_player > 18 :
+                await ctx.send('Too many players, there must be less than 18 players')
+            await ctx.send('The game can\'t start')
 
 
 
@@ -79,7 +60,6 @@ async def start(ctx, *players:discord.Member):
         # Main loop for the game
         else:
             discord_members = members_list(players)
-            await ctx.send(discord_members)
 
             for player in players:
                 channel = await player.create_dm()
@@ -94,13 +74,17 @@ async def start(ctx, *players:discord.Member):
                     if reaction.emoji == '✅':
                         pass
                 else:
-                    while int(num_role.content) > num_player:
+                    while int(num_role.content) > num_player-5:
                         await ctx.send(f'How many {roles[i][0]} do you want? (0 - {num_player})')
                         num_role = await client.wait_for('message', check=check_msg)
                         if int(num_role.content) >= num_player:
                             await ctx.send('Too many players, please retype an input')
                     
+
+
             # affect roles to players
+            players_num_for_role = give_num(list(players), num_player)
+            role_num = give_num(list(roles), 4)
 
 
 
@@ -108,6 +92,7 @@ async def start(ctx, *players:discord.Member):
 @client.command()
 async def make_channel(ctx):
     channel = await guild.create_text_channel('cool-channel')
+
 
 
 
