@@ -1,8 +1,9 @@
 # Libraries :
+from random import *
 from discord.ext import commands
 import discord, asyncio, random
 from discord.utils import get
-from random import *
+
 
 
 # Variables :
