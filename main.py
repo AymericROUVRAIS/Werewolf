@@ -111,5 +111,5 @@ async def make_channel(ctx):
 
 
 
-# run the bot
+# Run the bot
 client.run(TOKEN)

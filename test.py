@@ -32,6 +32,17 @@ def members_list(players):
         a.append((player.name, player),)
     return list(a)
 
+def give_num(_list, max_num):
+    done = []
+    a = 0
+    for i in range(max_num):
+        a = randint(0, max_num)
+        while a in done:
+            a = randint(0, max_num)
+            print(a)
+        _list.append((_list[i][0], done[i]))
+    return _list
+
 num_role = 0
 class Python_con:
     def __init__(self):
@@ -48,7 +59,11 @@ async def start(ctx, *players):
     def check_msg(message):
         return message.author == ctx.message.author and ctx.message.channel == message.channel
 
-    discord_members = members_list(players)
+    # discord_members = members_list(players)
+    # players_num = members_list(players)
+    # roles_num = []
+    # for i in range(roles):
+    #     roles_num.append((roles[i][0], 0))
 
     num_player = count_num(players)
     num_role = Python_con
@@ -66,16 +81,26 @@ async def start(ctx, *players):
                     await ctx.send('Too many players, please retype an input')
 
 
-    for player in players: # give each player a number
-        pass
-    
-    for role in roles: # give each role a number
-        pass
 
-    for player in players:
-        for role in roles:
-            if player == role : # if num ==, give role to player
-                pass
+    players_num_for_role = give_num(list(players), num_player)
+    role_num = give_num(list(roles), 4)
 
-# run the bot
+    await ctx.send(players_num_for_role)
+    await ctx.send(role_num)
+
+    # for i in range(num_player): # give each role a number
+    #    roles[i][1] = randint(0, num_player)
+
+    # for i in range(num_player): # give each player a number
+    #     players_num[i][1] = randint(0, num_player)
+
+    # for i in range(num_player):
+    #     for x in range(num_player):
+    #         if i == x : # if num ==, give role to player
+    #             pass
+
+
+
+
+# Run the bot
 client.run(TOKEN)
