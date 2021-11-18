@@ -12,9 +12,7 @@ async def on_ready():
 
 
 
-# WHY ARE THEY HERE???? 
-NAME = 0
-MEMBER = 1
+
 
 
 
@@ -22,17 +20,24 @@ MEMBER = 1
 # Start command :
 @client.command()
 async def start(ctx, *players:discord.Member):
+    # Variables :
+    discord_members = members_list(players)
     num_player = count_num(players)
-    num_role = NumRole
-    num_role.content = num_player+1
-    
-    # Define different checks
+    answer_num = NumRole
+    answer_num.content = num_player+1
+    players_role_list = []
+    for i in range(num_player):
+        players_role_list.append(discord_members[i][0])
+
+    # Define different reaction checks :
     def check(reaction, user):
         return user == ctx.message.author and msg.id == reaction.message.id and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
     def check_msg(message):
         return message.author == ctx.message.author and ctx.message.channel == message.channel
 
-    # Start message
+
+
+    # Start message :
     msg = await ctx.send('You\'re about to start a werewolf game\nAre you sure?')
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
@@ -57,34 +62,35 @@ async def start(ctx, *players:discord.Member):
 
 
 
-        # Main loop for the game
+        # Main loop for the game :
         else:
-            discord_members = members_list(players)
-
             for player in players:
                 channel = await player.create_dm()
                 await channel.send('You have been added to a werewolf game!')
 
             
-            for i in range(num_total_roles): # define number of each role
+            for i in range(4): # define number of each role; 4 : number of role
                 if roles[i][1] == 0:
                     msg = await ctx.send(f'Do you want a {roles[i][0]}?')
                     await msg.add_reaction('✅')
                     await msg.add_reaction('❌')
                     if reaction.emoji == '✅':
-                        pass
+                        roles_name.append(roles[i][0])
                 else:
-                    while int(num_role.content) > num_player-5:
-                        await ctx.send(f'How many {roles[i][0]} do you want? (0 - {num_player})')
-                        num_role = await client.wait_for('message', check=check_msg)
-                        if int(num_role.content) >= num_player:
+                    while int(answer_num.content) > num_player-5 or int(answer_num.content) == 0:
+                        await ctx.send(f'How many {roles[i][0]} do you want? (1 - {num_player})')
+                        answer_num = await client.wait_for('message', check=check_msg)
+                        if int(answer_num.content) >= num_player or int(answer_num.content) == 0:
                             await ctx.send('Too many players, please retype an input')
-                    
+                    answer_num = give_num(answer_num.content)
+                    for i in range(answer_num):
+                        roles_name.append(roles[0][0]) # append "werewolf" to the list
 
 
-            # affect roles to players
-            players_num_for_role = give_num(list(players), num_player)
-            role_num = give_num(list(roles), 4)
+            # affect roles to players :
+            num_role = count_num(roles_name)
+            players_num_for_role = give_num(players_role_list, num_player)
+            role_num_to_give = give_num(roles_name, num_role)
 
 
 
@@ -96,5 +102,5 @@ async def make_channel(ctx):
 
 
 
-# Run the bot
+# Run the bot :
 client.run(TOKEN)

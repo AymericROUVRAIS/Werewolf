@@ -2,18 +2,17 @@
 from random import *
 from discord.ext import commands
 import discord, asyncio, random
-from discord.utils import get
+
 
 
 
 # Variables :
 TOKEN = ''
-guild = '840268645996429343'
-num_role = 0
-num_total_roles = 4
-roles_list = ['werewolf', 'witch', 'seer', 'cupid', 'hunter']
+guild = '840268645996429343' # number of the guild the bot is in : "LoupGarou"
+answer_num = 0 # used for the class NumRole
+roles_name = []
 roles = [
-    ('werewolve', 1),
+    ('werewolves', 1),
     ('witch', 0),
     ('seer', 0),
     ('cupid', 0),
@@ -56,6 +55,6 @@ def give_num(_list, max_num):
 # Classes :
 class NumRole:
     def __init__(self):
-        self.num = num_role
+        self.num = answer_num
     def content(self):
         return int(self.num)
