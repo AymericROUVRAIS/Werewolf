@@ -14,6 +14,9 @@ async def on_ready():
 
 
 
+
+
+
 # Start command :
 @client.command()
 async def start(ctx, *players:discord.Member):
@@ -43,32 +46,43 @@ async def start(ctx, *players:discord.Member):
                 roles_list.append(roles[i][0])
 
 
-        else:
+        else: # werewolf, more if roles added
             while int(answer_num.content) > num_player:
                 await ctx.send(f'How many {roles[i][0]} do you want? (0 - {num_player})')
                 answer_num = await client.wait_for('message', check=check_msg)
                 if int(answer_num.content) >= num_player:
                     await ctx.send('Too many players, please retype an input')
-            answer_num = count_num(answer_num.content)
-            for i in range(answer_num):
-                roles_list.append(roles[0][0]) # append "werewolf" to the list
+            num_werewolf = int(answer_num.content)
+            if num_werewolf != 0:
+                for i in range(num_werewolf):
+                    roles_list.append(roles[0][0]) # append "werewolf" to the list
 
 
-    num_role = count_num(roles_list)
-    players_role_list = []
-    for i in range(num_player):
-        players_role_list.append(discord_members[i][0])
+    num_role = count_num(roles_list) # numbers of roles except villagers
+    players_role_list = [discord_members[i][0] for i in range(num_player)]
 
 
+
+    # Add villagers to the players left :
+    if num_role < num_player:
+        villagers = num_player - num_role
+        for i in range(villagers):
+            roles_list.append('villager')
+    num_role = count_num(roles_list) # update num_role
+
+    # give number to players / roles :
     players_num_for_role = give_num(players_role_list, num_player)
     role_num_to_give = give_num(roles_list, num_role)
 
-
-    # NOW THIS :
+    
     for i in range(num_player):
         for x in range(num_player):
-            if i == x : # if num ==, give role to player
+            if players_num_for_role[i][1] == role_num_to_give[x][1] : # if num ==, give role to player
+                # players_role_list[i][0] = role_num_to_give[x][0]
+                # not working str.replace not work, try str[i][o].replace
                 pass
+    await ctx.send(players_role_list)
+
 
 
 

@@ -24,9 +24,9 @@ roles = [
 
 
 # Functions :
-def count_num(players):
+def count_num(_list):
     i = 0
-    for player in players:
+    for item in _list:
         i+=1
     return i
 
@@ -46,8 +46,8 @@ def members_list(players):
 def give_num(_list, max_num):
     a = random.sample(range(0, max_num), max_num)
     for i in range(max_num):
-        _list.append((_list[i], a[i]))
-    _list =  _list[max_num:]
+        _list.append([_list[i], a[i]])
+    _list = _list[max_num:]
     return _list
 
 
