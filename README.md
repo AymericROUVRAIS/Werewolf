@@ -1,24 +1,3 @@
-To do :
-- initialize game
-- give roles
-- choose a maire
-- vote
-- sleep
-- kill
-- sorciere
-- cupi
-
-
-
-
-- put the main fonction into Cog (class)
-
-
-
-
-
-
-
 Rules :
 - Nombre de joueurs : 8 à 18
 |num|lg|soso|villageois|
