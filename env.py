@@ -9,7 +9,7 @@ import discord, asyncio, random
 
 
 # Variables :
-TOKEN = 'ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.YAljYdEBwHuwkM4-D3pwgUW26p8'
+TOKEN = ''
 werewolves_lair = 939937401772593285
 answer_num = 0 # used for the class NumRole
 game_on = True
