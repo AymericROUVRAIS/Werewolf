@@ -28,17 +28,34 @@ async def start(ctx, *players:discord.Member):
     discord_members = members_list(players)
     num_player = count_num(players)
     answer_num = NumRole
+    VoteWerewolf = Kill
+    ChoiceWitch = Witch
     answer_num.content = num_player+1
-    players_role_list = [discord_members[i][0] for i in range(num_player)]
+    players_list = [discord_members[i][0] for i in range(num_player)]
 
-    
+
+
+
     # Define different reaction checks :
     def check(reaction, user):
         return user == ctx.message.author and msg.id == reaction.message.id and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
     def check_msg(message):
         return message.author == ctx.message.author and ctx.message.channel == message.channel
-    def check_answer(message):
-        return message.author == ctx.author and message.guild is None
+
+    def check_answer_werewolf(message):
+        return message.author in werewolf and message.guild is None
+    def check_answer_witch(message):
+        return message.author == witch and message.guild is None
+    def check_answer_seer(message):
+        return message.author == seer and message.guild is None
+    def  check_answer_cupid(message):
+        return message.author == cupid and message.guild is None
+    def check_answer_hunter(message):
+        return message.author == hunter and message.guild is None
+    def check_answer_villager(message):
+        return message.author in villager and message.guild is None
+
+
 
 
 
@@ -115,7 +132,7 @@ async def start(ctx, *players:discord.Member):
     roles_name.extend(give_villager(num_role, num_player)) # add villagers to the players left
     num_role = count_num(roles_name) # update num_role
 
-    players_num_for_role = give_num(players_role_list, num_player) # give num to player
+    players_num_for_role = give_num(players_list, num_player) # give num to player
     role_num_to_give = give_num(roles_name, num_role)
     players_role_list = find_num(players_num_for_role, role_num_to_give, num_player)
 
@@ -127,12 +144,13 @@ async def start(ctx, *players:discord.Member):
 
 
     # Init role vars :
-    werewolf = check_equality(send_role, 'werewolf')
-    witch = check_equality(send_role, 'witch')
-    seer = check_equality(send_role, 'seer')
-    cupid = check_equality(send_role, 'cupid')
-    hunter = check_equality(send_role, 'hunter')
-    
+    werewolf = check_role(send_role, 'werewolf')
+    witch = check_role(send_role, 'witch')
+    seer = check_role(send_role, 'seer')
+    cupid = check_role(send_role, 'cupid')
+    hunter = check_role(send_role, 'hunter')
+    villager = check_role(send_role, 'villager')
+    mayor = ''
 
 
 
@@ -162,33 +180,213 @@ async def start(ctx, *players:discord.Member):
 
 
 
-    # First night :
+
+
+
+
+
+    ######################################################################################################################################################
+    #                                                                                                                                                    #
+    #                                                               Main Loop for the game                                                               #
+    #                                                                                                                                                    #
+    ######################################################################################################################################################
+
+
+
+
+
+
     night = 0
-    await ctx.send('Cupid, wake up.')
-    await cupid.send('Choose 2 player : ')
-    msg = await client.wait_for('message', check=check_answer)
-
-
-
-    # Main loop for the game
     game_on = True
     while game_on == True:
         # Night :
         await ctx.send(f'Night falls, it\'s the night #{night}')
+        VoteWerewolf.all_players = discord_members # update list
+        ChoiceWitch.all_players = discord_members
+
+
+        # First night :
+        if night == 0:
+            #Cupid :
+            await ctx.send('Cupid, wake up.')
+            for i in range(2):
+                if i == 0:
+                    await cupid.send(f'Choose the {i+1}st player : ')
+                else:
+                    await cupid.send(f'Choose the {i+1}nd player : ')
+                msg = await client.wait_for('message', check=check_answer_cupid)
+                exist = check_exist(msg.content, players_list)
+                couple.append(msg.content)
+                while exist == False:
+                    await cupid.send(f'Player {msg.content} does not exist, please try again')
+                    msg = await client.wait_for('message', check=check_answer_cupid)
+                    exist = check_exist(msg.content, players_list)
+                    if exist == True:
+                        couple.pop()
+                        couple.append(msg.content)
+
+            c1 = find_player(couple[0], discord_members)
+            c2 = find_player(couple[1], discord_members)
+            await c1.send(f'You are now bound to {couple[1]}')
+            await c2.send(f'You are now bound to {couple[0]}')
 
 
 
         # Seer :
         await ctx.send('Seer, wake up.')
-        channel = await seer.create_dm()
-        await channel.send('You may pick a player to know his role.')
+        await seer.send('You may pick a player to know his role.')
+        msg = await client.wait_for('message', check=check_answer_seer)
+        while check_exist(msg.content, players_list) == False:
+            await seer.send(f'Player {msg.content} does not exist, please try again')
+            msg = await client.wait_for('message', check=check_answer_seer)
+        
+        role = find_role(msg.content, players_role_list)
+        await seer.send(f'{msg.content} is a {role}')
+
+
 
         # Werewolf :
+        for w in werewolf:
+            await w.send('Choose a victim.\nYou only have one answer, choose wisely')
+            msg = await client.wait_for('message', check=check_answer_werewolf)
+            VoteWerewolf.ap_l(msg.content)
+            while check_exist(msg.content, players_list) == False:
+                await w.send(f'Player {msg.content} does not exist, please try again')
+                msg = await client.wait_for('message', check=check_answer_werewolf)
+                VoteWerewolf.def_name(msg.content)
+
+        VoteWerewolf.def_name(find_max(VoteWerewolf.l))
+        VoteWerewolf.def_player()
+
+
 
         # Witch :
+        if ChoiceWitch.status_k == False or ChoiceWitch.status_s == False:      # if both used, do nothing
+            await ctx.send('Witch, wake up.')
+            if ChoiceWitch.status_k == False and ChoiceWitch.status_s == False:                # both
+                await witch.send('Do you want to kill or save a player or do nothing? K/S/N')
+                msg = await client.wait_for('message', check=check_answer_witch)
+                while msg.content != 'K' or msg.content != 'S' or msg.content != 'N':
+                    await witch.send('Wrong input, please try again')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+                ChoiceWitch.change_status(msg.content)
 
+                if ChoiceWitch.status == 'K':
+                    await witch.send('Who do you want to kill?')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+                    while check_exist(msg.content, players_list) == False:
+                        await witch.send(f'Player {msg.content} does not exist, please try again')
+                        msg = await client.wait_for('message', check=check_answer_witch)
+                    ChoiceWitch.status_k = False
+                    ChoiceWitch.def_name(msg.content)
+                    ChoiceWitch.def_player()
+
+                elif ChoiceWitch.status == 'S':
+                    await witch.send(f'{VoteWerewolf.name} has been choosen by the werewolves, do you want to save him? Y/N')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+                    while msg.content != 'Y' or msg.contetn != 'N':
+                        await witch.send('Wrong input, please try again')
+                        msg = await client.wait_for('message', check=check_answer_witch)
+                    if msg.content == 'Y':
+                        ChoiceWitch.status_s = True
+
+
+
+
+            elif ChoiceWitch.status_k == True:                                            # just kill 
+                await witch.send('Do you want to kill a player? Y/N')
+                msg = await client.wait_for('message', check=check_answer_witch)
+                while msg.content != 'Y' or msg.content != 'N':
+                    await witch.send('Wrong input, please try again')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+
+                await witch.send('Who do you want to kill?')
+                msg = await client.wait_for('message', check=check_answer_witch)
+                while check_exist(msg.content, players_list) == False:
+                    await witch.send(f'Player {msg.content} does not exist, please try again')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+
+                ChoiceWitch.status_k = True
+                ChoiceWitch.name = msg.content
+                ChoiceWitch.find_player(discord_members)
+
+
+
+            else :                                                        # just save
+                await witch.send('Do you want to save a player? Y/N')
+                msg = await client.wait_for('message', check=check_answer_witch)
+                while msg.content != 'Y' or msg.content != 'N':
+                    await witch.send('Wrong input, please try again')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+
+                await witch.send(f'{VoteWerewolf.name} has been choosen by the werewolves, do you want to save him? Y/N')
+                msg = await client.wait_for('message', check=check_answer_witch)
+                while msg.content != 'Y' or msg.contetn != 'N':
+                    await witch.send('Wrong input, please try again')
+                    msg = await client.wait_for('message', check=check_answer_witch)
+                if msg.content == 'Y':
+                    ChoiceWitch.status_s = True
+
+
+
+
+
+
+
+        # Day :
+        await ctx.send('Everyone wake up')
+        if ChoiceWitch.status_s == True:
+            VoteWerewolf.status = False
+        
+        if ChoiceWitch.status_k == True and VoteWerewolf != None:
+            await ctx.send('Two players died this night')
+            await ctx.send(f'{ChoiceWitch.name} was a {ChoiceWitch.role} and {VoteWerewolf.name} was a {VoteWerewolf.role}')
+            players_list.remove(ChoiceWitch.name)
+
+
+        elif ChoiceWitch.status_k == True :
+            await ctx.send('One player died this night')
+            await ctx.send(f'{ChoiceWitch.name} was a {ChoiceWitch.role}')
+        elif VoteWerewolf.status == True:
+            await ctx.send('One player died this night')
+            await ctx.send(f'{VoteWerewolf.name} was a {VoteWerewolf.role}')
+        else :
+            await ctx.send('No one died this night')
+
+        if mayor == ChoiceWitch.name or mayor == VoteWerewolf.name:
+            await ctx.send('The mayor is dead, a new one will be voted')
+            mayor = None
+
+
+        if night == 0 or mayor == None: # that or a on_message
+            vote = []
+            await ctx.send('Let\'s proceed to vote a mayor')
+            await ctx.send('Votes will be done in dms, any incorrect name won\'t count')
+            await ctx.send('You can debate here')
+
+            msg = await client.wait_for('message', check=check_answer_witch)
+            vote.append(msg.content)
+            msg = await client.wait_for('message', check=check_answer_seer)
+            vote.append(msg.content)
+            msg = await client.wait_for('message', check=check_answer_cupid)
+            vote.append(msg.content)
+            msg = await client.wait_for('message', check=check_answer_hunter)
+            vote.append(msg.content)
+            for w in werewolf:
+                msg = await client.wait_for('message', check=check_answer_werewolf)
+                vote.append(msg.content)
+            for v in villager:
+                msg = await client.wait_for('message', check=check_answer_villager)
+                vote.append(msg.content)
+
+            vote = find_player(vote)
+            mayor = find_max(vote)
+            await ctx.send(f'The new mayor is : {mayor}')
+
+
+
+            
         night += 1
-        break
 
 
 

@@ -9,19 +9,19 @@ import discord, asyncio, random
 
 
 # Variables :
-TOKEN = ''
-guild = '840268645996429343' # number of the guild the bot is in : "LoupGarou"
+TOKEN = 'ODQwMjcwNDUxOTAxMDcxNDIw.YJVw1w.YAljYdEBwHuwkM4-D3pwgUW26p8'
 werewolves_lair = 939937401772593285
 answer_num = 0 # used for the class NumRole
 game_on = True
 roles_name = []
+couple = []
 roles = [
     (1, 'werewolf', 'werewolves'),
     (0, 'witch'),
     (0, 'seer'),
     (0, 'cupid'),
     (0, 'hunter')
-] # 0 : only 1 player will have the role, 1 : 'indefinite'
+] # 0 : only 1 player will have the role, 1 : bcp
 
 
 
@@ -55,6 +55,26 @@ def find_num(l1, l2, max_num):
                 l.append([l1[i][0], l2[j][0]])
     return l
 
+def find_player(player, all_players):
+    l = []
+    if type(player) == list:
+        for name, member in all_players:
+            if player == name:
+                l.append(name)
+        return l
+    else:
+        for name, member in all_players:
+            if player == name:
+                return member
+
+def find_role(name, role_list):
+    for player, role in role_list:
+        if player == name:
+            return role
+
+def find_max(l):
+    return max(set(l), key = l.count)
+
 def give_villager(n_role, n_player):
     l = []
     if n_role < n_player:
@@ -63,21 +83,24 @@ def give_villager(n_role, n_player):
             l.append('villager')
     return l
 
-def check_role(players, players_role_list):
+def check_equality(players, players_role_list):
     l = []
-    for player in players:
+    for player, member in players:
         for name, role in players_role_list:
-            player1 = str(player)
-            if player1[:-5] == name:
-                l.append((player, role), )
+            if player == name:
+                l.append((member, role), )
     return l
 
-def check_equality(players, name):
+def check_role(players, name):
+    for player, role in players:
+        if role == name:
+            return player
+
+def check_role_list(players, name):
     l = []
     for player, role in players:
         if role == name:
             l.append(player)
-        print(player)
     return l
 
 def check_same(players : list):
@@ -87,8 +110,11 @@ def check_same(players : list):
                 return True
     return False
 
-def check_exist():
-    pass
+def check_exist(player, name_list):
+    for name in name_list:
+        if player == name:
+            return True
+    return False
 
 
 
@@ -98,3 +124,37 @@ class NumRole:
         self.num = answer_num
     def content(self):
         return int(self.num)
+
+class Kill:
+    def __init__(self, all_players):
+        self.all_players = all_players
+        self.status = False
+        self.name = ''
+        self.role = ''
+        self.player = None
+        self.l = []
+
+    def def_name(self, name):
+        self.name = name
+    
+    def find_role(self):
+        pass
+
+    def def_player(self):
+        for name, member in self.all_players:
+            if self.name == name:
+                self.player = member
+    
+    def ap_l(self, name):
+        self.l.append(name)
+
+
+class Witch(Kill):
+    def __init__(self):
+        Kill.__init__(self)
+        self.status = ''
+        self.status_s = False
+        self.status_k = False
+
+    def change_status(self, para):
+        self.status = para
